@@ -4,6 +4,7 @@ import datetime
 import time
 import typing
 from multidict import CIMultiDict
+from .objects import *
 
 class TDSBConnects:
 
@@ -115,5 +116,5 @@ class TDSBConnects:
         url = f"api/TimeTable/GetTimeTable/Student/{school_id}/{date.day:02d}{date.month:02d}{date.year}"
         return await self._get_endpoint(url)
     
-    async def get_user_info(self):
-        return await self._get_endpoint("api/Account/GetUserInfo")
+    async def get_user_info(self) -> User:
+        return User(self, await self._get_endpoint("api/Account/GetUserInfo"))
