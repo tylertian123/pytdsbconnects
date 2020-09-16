@@ -1,3 +1,4 @@
+import datetime
 import enum
 import typing
 
@@ -22,6 +23,47 @@ class APIObject:
     def __init__(self, session: "TDSBConnects", data: typing.Dict[str, typing.Any]):
         self._session = session
         self._data = data
+
+
+class School(APIObject):
+    """
+    A school.
+    """
+
+    @property
+    def name(self) -> str:
+        return self._data["SchoolName"]
+    
+    @property
+    def code(self) -> int:
+        return self._data["SchoolCode"]
+    
+    @property
+    def is_onboard(self) -> str:
+        return self._data["IsOnboard"]
+    
+    @property
+    def id(self) -> int:
+        """
+        The ID of the school *for this user* (NOT an absolute ID; for that use the school code).
+        """
+        return self._data["SchoolSetting"]["Id"]
+    
+    @property
+    def school_year(self) -> str:
+        return self._data["SchoolSetting"]["CurrentSession"]
+    
+    @property
+    def track(self) -> str:
+        return self._data["SchoolSetting"]["SchoolYearTrack"]
+    
+    @property
+    def school_year_start(self) -> datetime.datetime:
+        return datetime.datetime.strptime(self._data["SchoolSetting"]["SessionStart"], "%Y-%m-%dT%H:%M:%S")
+    
+    @property
+    def school_year_end(self) -> datetime.datetime:
+        return datetime.datetime.strptime(self._data["SchoolSetting"]["SessionEnd"], "%Y-%m-%dT%H:%M:%S")
 
 
 class User(APIObject):
@@ -83,7 +125,15 @@ class User(APIObject):
     
     @property
     def roles(self) -> typing.List[Role]:
-        return [Role(r) for r in self._data["Roles"]]
+        return [Role(r) for r in self._data["Role"]]
+    
+    @property
+    def birthdate(self) -> datetime.datetime:
+        return datetime.datetime.strptime(self._data["BirthDate"], "%Y-%m-%dT%H:%M:%S")
+    
+    @property
+    def schools(self) -> typing.List[School]:
+        return [School(self._session, school) for school in self._data["SchoolList"]]
 
 
 from .tdsbconnects import * # nopep8
