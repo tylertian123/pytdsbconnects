@@ -1,5 +1,14 @@
 import setuptools
-from tdsbconnects.version import __version__ as lib_ver
+import importlib.util
+import os
+
+def get_lib_ver():
+    spec = importlib.util.spec_from_file_location("tdsbconnects.version", os.path.join(os.path.dirname(__file__), "tdsbconnects/version.py"))
+    version = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(version)
+    return version.__version__
+
+lib_ver = get_lib_ver()
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
