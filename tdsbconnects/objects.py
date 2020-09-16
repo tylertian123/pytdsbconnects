@@ -1,6 +1,7 @@
 import datetime
 import enum
 import typing
+import re
 from .util import *
 
 
@@ -112,6 +113,8 @@ class School(APIObject):
     A school.
     """
 
+    DAY_CYCLE_REGEX = re.compile(r"\w{3}\(([D\d]*)\)")
+
     @property
     def name(self) -> str:
         return self._data["SchoolName"]
@@ -147,7 +150,7 @@ class School(APIObject):
     def school_year_end(self) -> datetime.datetime:
         return parse_datetime(self._data["SchoolSetting"]["SessionEnd"])
     
-    async def timetable(self, date: typing.Union[datetime.date, datetime.datetime]) -> typing.List[TimetableItem]:
+    async def timetable(self, date: datetime.date) -> typing.List[TimetableItem]:
         """
         Get the user's timetable for this school for a date as a list of timetable items.
 
@@ -156,6 +159,18 @@ class School(APIObject):
         url = f"api/TimeTable/GetTimeTable/Student/{self.code}/{date.day:02d}{date.month:02d}{date.year}"
         data = await self._session._get_endpoint(url)
         return [TimetableItem(self._session, item) for item in data["CourseTable"]]
+
+    async def day_cycle_names(self, start_date: datetime.date, end_date: datetime.date):
+        """
+        Get the cycle names for a range of dates, usually observed as <weekday>(D1).
+
+        :param start_date: The start of the range of dates to query (the first entry in the returned list corresponds to this date)
+        :param end_date: The end of the range of dates to query (the last entry in the returned list corresponds to this date)
+        """
+
+        url = f"api/TimeTable/GetDayNameDayCycle/{self.code}/{self.school_year}/{self.track}/{start_date.day:02d}{start_date.month:02d}{start_date.year}/{end_date.day:02d}{end_date.month:02d}{end_date.year}"
+        data = await self._session._get_endpoint(url)
+        return [School.DAY_CYCLE_REGEX.match(x).group(1) for x in data]
 
 
 class User(APIObject):
