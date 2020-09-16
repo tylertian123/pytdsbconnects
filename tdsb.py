@@ -8,7 +8,9 @@ class TDSBConnects:
 
     API_URL = "https://zappsmaprd.tdsb.on.ca/"
 
-    def __init__(self, auto_refresh: bool=True, min_token_life: float=180.0):
+    X_CLIENT_APP_INFO = "pytdsbconnects|||False|0.0.2|False|51|False)"
+
+    def __init__(self, auto_refresh: bool=True, min_token_life: float=30.0):
         """
         Constructor.
         
@@ -21,7 +23,9 @@ class TDSBConnects:
         self._token = None
         self._refresh_token = None
         self._token_expiry = None
-        self._session = aiohttp.ClientSession(raise_for_status=True)
+        self._session = aiohttp.ClientSession(raise_for_status=True, headers={
+            "X-Client-App-Info": self.X_CLIENT_APP_INFO,
+        })
 
     def _update_auth(self, data: typing.Dict[str, typing.Any]):
         self._token = data["access_token"]
@@ -29,6 +33,7 @@ class TDSBConnects:
         self._token_expiry = time.time() + data["expires_in"]
         self._session._default_headers = CIMultiDict({
             "Authorization": "Bearer " + self._token,
+            "X-Client-App-Info": self.X_CLIENT_APP_INFO,
         })
     
     async def login(self, username: str, password: str):
@@ -64,7 +69,7 @@ class TDSBConnects:
         return data
     
     async def get_timetable(self, school_id: int, date: datetime.date):
-        url = f"api/TimeTable/GetStudentTimeTable/{school_id}/{date.day:02d}{date.month:02d}{date.year}"
+        url = f"/api/TimeTable/GetTimeTable/Student/{school_id}/{date.day:02d}{date.month:02d}{date.year}"
         return await self._get_endpoint(url)
     
     async def get_user_info(self):
