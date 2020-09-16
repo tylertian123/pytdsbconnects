@@ -10,7 +10,11 @@ class TDSBConnects:
 
     API_URL = "https://zappsmaprd.tdsb.on.ca/"
 
-    X_CLIENT_APP_INFO = "pytdsbconnects|||False|0.0.2|False|51|False)"
+    # Platform Name | Client App UUID | Current Time | First App Launch | Version Number | First Launch Current Version | Build Number | First Launch Current Build
+    # The server will send a 401 if the build number isn't high enough, however it doesn't check if the number is too high
+    # So 2147483647 should ensure that the lib always works
+    # The server also doesn't verify any of the fields beside the build num
+    X_CLIENT_APP_INFO = "pytdsbconnects||||0.0.0||2147483647|"
 
     def __init__(self, auto_refresh: bool=True, min_token_life: float=30.0):
         """
@@ -19,9 +23,9 @@ class TDSBConnects:
         Although the session is created when the object is constructed, an access token
         is not obtained. login() must be called before any operations.
         
-        :param auto_refresh: Whether to automatically refresh the token.
-        :param min_token_life: When a token is valid for less than this number of seconds,
-                               it will be automatically refreshed.
+        :param auto_refresh: Whether to automatically refresh the token (default true).
+        :param min_token_life: The minimum remaining time before expiry for a token
+                               before it is refreshed (in seconds, default 30).
         """
         self._auto_refresh = auto_refresh
         self._min_token_life = min_token_life
