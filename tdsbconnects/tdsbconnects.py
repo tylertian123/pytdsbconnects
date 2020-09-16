@@ -116,7 +116,7 @@ class TDSBConnects:
         data = await resp.json()
         return data
     
-    async def get_timetable(self, school_id: int, date: datetime.date):
+    async def get_timetable(self, school_id: int, date: typing.Union[datetime.date, datetime.datetime]):
         url = f"api/TimeTable/GetTimeTable/Student/{school_id}/{date.day:02d}{date.month:02d}{date.year}"
         return await self._get_endpoint(url)
     
