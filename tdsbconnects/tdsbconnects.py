@@ -86,7 +86,7 @@ class TDSBConnects:
         if self._refresh_token is None:
             return
         resp = await self._session.post(self.API_URL + "token", data={
-            "refresh_token": self.refresh_token,
+            "refresh_token": self._refresh_token,
             "grant_type": "refresh_token",
         })
         self._update_auth(await resp.json())
