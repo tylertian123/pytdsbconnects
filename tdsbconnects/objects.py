@@ -77,11 +77,13 @@ class TimetableItem(APIObject):
     
     @property
     def course_start(self) -> datetime.datetime:
-        return parse_datetime(self._data["StudentCourse"]["StartTime"])
+        date = self.course_date
+        return parse_datetime(self._data["StudentCourse"]["StartTime"]).replace(year=date.year, month=date.month, day=date.day)
     
     @property
     def course_end(self) -> datetime.datetime:
-        return parse_datetime(self._data["StudentCourse"]["EndTime"])
+        date = self.course_date
+        return parse_datetime(self._data["StudentCourse"]["EndTime"]).replace(year=date.year, month=date.month, day=date.day)
     
     @property
     def course_name(self) -> str:
