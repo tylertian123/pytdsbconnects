@@ -1,6 +1,5 @@
 import aiohttp
 import asyncio
-import datetime
 import time
 import typing
 from multidict import CIMultiDict
@@ -16,7 +15,7 @@ class TDSBConnects:
     # The server also doesn't verify any of the fields beside the build num
     X_CLIENT_APP_INFO = "pytdsbconnects||||0.0.0||2147483647|"
 
-    def __init__(self, auto_refresh: bool=True, min_token_life: float=30.0):
+    def __init__(self, auto_refresh: bool = True, min_token_life: float = 30.0):
         """
         Constructor.
 
@@ -107,6 +106,7 @@ class TDSBConnects:
         For internal use only.
 
         :param endpoint: The endpoint.
+        :return: The JSON response from the server.
         """
         if self._token is None:
             return
@@ -116,9 +116,10 @@ class TDSBConnects:
         data = await resp.json()
         return data
     
-    async def get_timetable(self, school_id: int, date: typing.Union[datetime.date, datetime.datetime]):
-        url = f"api/TimeTable/GetTimeTable/Student/{school_id}/{date.day:02d}{date.month:02d}{date.year}"
-        return await self._get_endpoint(url)
-    
     async def get_user_info(self) -> User:
+        """
+        Get info for the current user.
+
+        :return: The current user's info.
+        """
         return User(self, await self._get_endpoint("api/Account/GetUserInfo"))

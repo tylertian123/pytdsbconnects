@@ -157,6 +157,7 @@ class School(APIObject):
         Get the user's timetable for this school for a date as a list of timetable items.
 
         :param date: The date to get the timetable for (a datetime or a date).
+        :return: A list of items in the timetable.
         """
         url = f"api/TimeTable/GetTimeTable/Student/{self.code}/{date.day:02d}{date.month:02d}{date.year}"
         data = await self._session._get_endpoint(url)
@@ -168,6 +169,7 @@ class School(APIObject):
 
         :param start_date: The start of the range of dates to query (the first entry in the returned list corresponds to this date)
         :param end_date: The end of the range of dates to query (the last entry in the returned list corresponds to this date)
+        :return: The day cycle names for the dates requested.
         """
 
         url = f"api/TimeTable/GetDayNameDayCycle/{self.code}/{self.school_year}/{self.track}/{start_date.day:02d}{start_date.month:02d}{start_date.year}/{end_date.day:02d}{end_date.month:02d}{end_date.year}"
